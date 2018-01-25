@@ -1,0 +1,21 @@
+{
+  "name": "PHP Mail Signature",
+  "description": "Originally forked from https://github.com/louisameline/php-mail-signature",
+  "version": "1.0.2",
+  "authors": [
+	{
+	  "name": "Jais Djurhuus-Kempel",
+	  "email": "jdk@combine.dk"
+	}
+  ],
+  "require": {
+	"php": ">=5.4",
+	"ext-openssl": "*",
+	"ext-hash": "*"
+  },
+  "autoload": {
+	"psr-4": {
+	  "Pms\\": "src/"
+	}
+  }
+}
