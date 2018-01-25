@@ -26,8 +26,8 @@ class MailSignature {
 	 * MailSignature constructor.
 	 * @param string $privateKey Either file path to .pem signature file or PEM formatted string
 	 * @param string $passPhrase PassPhrase to PEM private key
-	 * @param string $domain Email domain the signature belongs to
-	 * @param string $selector
+	 * @param string $domain Domain or subdomain of the signing entity (i.e. the domain where the e-mail comes from)
+	 * @param string $selector Selector used in your DKIM DNS record, e.g. : $selector._domainkey.$domain
 	 * @param array $options
 	 */
 	public function __construct($privateKey, $passPhrase, $domain, $selector, $options = []) {
