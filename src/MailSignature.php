@@ -3,7 +3,62 @@
 namespace Pms;
 
 /**
- * php-mail-signature class
+ * php-mail-signature
+ *
+ * https://github.com/louisameline/php-mail-signature
+ * Author:	Louis Ameline - 04/2012
+ *
+ *
+ * This stand-alone DKIM class is based on the work made on PHP-MAILER (see license below).
+ * The differences are :
+ * - it is a standalone class
+ * - it supports Domain Keys header
+ * - it supports UTF-8
+ * - it will let you choose the headers you want to base the signature on
+ * - it will let you choose between simple and relaxed body canonicalization
+ *
+ * If the class fails to sign the e-mail, the returned DKIM header will be empty and the mail
+ * will still be sent, just unsigned. A php warning is thrown for logging.
+ *
+ * NOTE: you will NOT be able to use Domain Keys with PHP's mail() function, since it does
+ * not allow to prepend the DK header before the To and Subject ones. DKIM is ok with that,
+ * but Domain Keys is not. If you still want Domain Keys, you will have to manage to send
+ * your mail straight to your MTA without the mail() function.
+ *
+ * Successfully tested against Gmail, Yahoo Mail, Live.com, appmaildev.com
+ * Hope it helps and saves you plenty of time. Let me know if you find issues.
+ *
+ * For more info, you should read :
+ * @link http://www.ietf.org/rfc/rfc4871.txt
+ * @link http://www.zytrax.com/books/dns/ch9/dkim.html
+ *
+ * @link https://github.com/louisameline/php-mail-signature
+ * @author Louis Ameline
+ * @version 1.0.3
+ */
+
+/*
+ * Original PHPMailer CC info :
+ * .---------------------------------------------------------------------------.
+ * |  Software: PHPMailer - PHP email class                                    |
+ * |   Version: 5.2.1                                                          |
+ * |      Site: https://code.google.com/a/apache-extras.org/p/phpmailer/       |
+ * | ------------------------------------------------------------------------- |
+ * |     Admin: Jim Jagielski (project admininistrator)                        |
+ * |   Authors: Andy Prevost (codeworxtech) codeworxtech@users.sourceforge.net |
+ * |          : Marcus Bointon (coolbru) coolbru@users.sourceforge.net         |
+ * |          : Jim Jagielski (jimjag) jimjag@gmail.com                        |
+ * |   Founder: Brent R. Matzelle (original founder)                           |
+ * | Copyright (c) 2010-2012, Jim Jagielski. All Rights Reserved.              |
+ * | Copyright (c) 2004-2009, Andy Prevost. All Rights Reserved.               |
+ * | Copyright (c) 2001-2003, Brent R. Matzelle                                |
+ * | ------------------------------------------------------------------------- |
+ * |   License: Distributed under the Lesser General Public License (LGPL)     |
+ * |            http://www.gnu.org/copyleft/lesser.html                        |
+ * | This program is distributed in the hope that it will be useful - WITHOUT  |
+ * | ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or     |
+ * | FITNESS FOR A PARTICULAR PURPOSE.                                         |
+ * '---------------------------------------------------------------------------'
  */
 class MailSignature {
 
