@@ -59,6 +59,7 @@ namespace Pms;
  * | ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or     |
  * | FITNESS FOR A PARTICULAR PURPOSE.                                         |
  * '---------------------------------------------------------------------------'
+ * php-mail-signature class
  */
 class MailSignature {
 
@@ -167,7 +168,7 @@ class MailSignature {
 				$header_type = trim(strtolower($line[0]));
 				$header_value = trim($line[1]);
 				
-				if (in_array($header_type, $this->options['signed_headers']) || $header_type == 'dkim-signature') {
+				if (in_array(strtolower($header_type), $this->options['signed_headers']) || strtolower($header_type) == 'dkim-signature') {
 					$aHeaders[$header_type] = $header_type . ':' . $header_value;
 				}
 			}
@@ -340,8 +341,8 @@ class MailSignature {
 			$this->dkimCanonicalizeBodySimple($body) :
 			$this->dkimCanonicalizeBodyRelaxed($body);
 		
-		// Base64 of packed binary SHA-1 hash of body
-		$bh = rtrim(chunk_split(base64_encode(pack("H*", sha1($body))), 64, "\r\n\t"));
+		// Base64 of packed binary SHA-256 hash of body
+		$bh = rtrim(base64_encode(pack("H*", hash('sha256', $body))), "\r\n\t");
 		$i_part =
 			($this->options['identity'] == null) ?
 			'' :
@@ -350,7 +351,7 @@ class MailSignature {
 		$dkim_header =
 			'DKIM-Signature: '.
 				'v=1;'."\r\n\t".
-				'a=rsa-sha1;'."\r\n\t".
+				'a=rsa-sha256;'."\r\n\t".
 				'q=dns/txt;'."\r\n\t".
 				's='.$this->selector.';'."\r\n\t".
 				't='.time().';'."\r\n\t".
@@ -366,12 +367,13 @@ class MailSignature {
 		$canonicalized_dkim_header = $this->dkimCanonicalizeHeadersRelaxed($dkim_header);
 		
 		// we sign the canonicalized signature headers
-		$to_be_signed = implode("\r\n", $this->canonicalizedHeadersRelaxed)."\r\n".$canonicalized_dkim_header['dkim-signature'];
+		$to_be_signed = implode("\r\n", $this->canonicalizedHeadersRelaxed) . "\r\n" . $canonicalized_dkim_header['dkim-signature'];
 		
 		// $signature is sent by reference in this function
 		$signature = '';
-		if(openssl_sign($to_be_signed, $signature, $this->privateKey)){
-			$dkim_header .= rtrim(chunk_split(base64_encode($signature), 64, "\r\n\t"))."\r\n";
+		if(openssl_sign($to_be_signed, $signature, $this->privateKey, OPENSSL_ALGO_SHA256)){
+			$hash = rtrim(base64_encode($signature), "\r\n\t")."\r\n";
+			$dkim_header .= $hash;
 		}
 		else {
 			trigger_error(sprintf('Could not sign e-mail with DKIM : %s', $to_be_signed), E_USER_WARNING);
@@ -426,7 +428,7 @@ class MailSignature {
 	 * @param string $headers
 	 * @return string
 	 */
-	public function getSignedHeaders($to, $subject, $body, $headers){
+	public function getSignedHeaders($to, $subject, $body, $headers) {
 		$signedHeaders = '';
 		
 		if(!empty($to) or !empty($subject)){
